@@ -33,7 +33,7 @@ jobs:
         run: npm ci
 
       - name: Build application
-        run: npm run build
+        run: npm run build -- --base-href=/jig/
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

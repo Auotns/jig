@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "ng serve",
-    "build": "ng build --configuration production --base-href /JIG/",
+    "build": "ng build --configuration production --base-href /jig/",
     "build:dev": "ng build --configuration development",
     "preview": "ng serve --configuration=production",
     "test": "echo \"No tests configured yet\"",
