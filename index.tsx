@@ -1,5 +1,4 @@
 
-
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
@@ -11,14 +10,30 @@ import { AppComponent } from './src/app.component';
 import { routes } from './src/app.routes';
 import { environment } from './src/environments/environment';
 
+console.log('Initializing app with Firebase config:', environment.firebase);
+
 bootstrapApplication(AppComponent, {
   providers: [
     provideZonelessChangeDetection(),
     provideRouter(routes),
-    provideFirebaseApp(() => initializeApp(environment.firebase)),
-    provideAuth(() => getAuth()),
-    provideFirestore(() => getFirestore())
+    provideFirebaseApp(() => {
+      console.log('Initializing Firebase...');
+      return initializeApp(environment.firebase);
+    }),
+    provideAuth(() => {
+      console.log('Initializing Auth...');
+      return getAuth();
+    }),
+    provideFirestore(() => {
+      console.log('Initializing Firestore...');
+      return getFirestore();
+    })
   ],
-}).catch((err) => console.error(err));
+}).then(() => {
+  console.log('App bootstrapped successfully');
+}).catch((err) => {
+  console.error('Bootstrap error:', err);
+  document.body.innerHTML = '<pre style="color:red;padding:20px;">ERROR: ' + err.message + '</pre>';
+});
 
 // AI Studio always uses an `index.tsx` file for all project types.
