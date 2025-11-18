@@ -6,30 +6,29 @@
   </button>
 
   <!-- Sidebar -->
-  <aside class="w-64 flex-shrink-0 bg-gray-800 text-white flex flex-col transition-transform duration-300 fixed md:static h-full z-40"
+  <aside class="w-64 flex-shrink-0 bg-gray-800 text-white flex flex-col transition-all duration-300 fixed md:static h-full z-40 md:z-auto"
          [ngClass]="{
-           '-translate-x-full': !isSidebarOpen(),
+           '-translate-x-full md:translate-x-0': !isSidebarOpen(),
            'translate-x-0': isSidebarOpen()
-         }"
-         class="md:translate-x-0">
+         }">
     <div class="h-20 flex items-center justify-center bg-gray-900">
       <h1 class="text-xl md:text-2xl font-bold tracking-wider">
         <i class="fas fa-toolbox mr-2 md:mr-3"></i>{{ 'sidebar.title' | translate }}
       </h1>
     </div>
     <nav class="flex-grow px-4 py-6 overflow-y-auto">
-      <a (click)="currentView.set('inventory'); isSidebarOpen.set(false)"
-        class="flex items-center px-4 py-3 mt-4 rounded-lg cursor-pointer transition-colors duration-200"
-        [class]="currentView() === 'inventory' ? 'bg-blue-600 text-white' : 'hover:bg-gray-700 hover:text-white'">
+      <button (click)="currentView.set('inventory'); isSidebarOpen.set(false)"
+        class="w-full flex items-center px-4 py-3 mt-4 rounded-lg transition-colors duration-200"
+        [class]="currentView() === 'inventory' ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'">
         <i class="fas fa-clipboard-list w-6 text-center"></i>
         <span class="mx-4 font-medium">{{ 'sidebar.inventory' | translate }}</span>
-      </a>
-      <a (click)="handleNewJig(); isSidebarOpen.set(false)"
-        class="flex items-center px-4 py-3 mt-4 rounded-lg cursor-pointer transition-colors duration-200"
-        [class]="currentView() === 'newJig' ? 'bg-blue-600 text-white' : 'hover:bg-gray-700 hover:text-white'">
+      </button>
+      <button (click)="handleNewJig(); isSidebarOpen.set(false)"
+        class="w-full flex items-center px-4 py-3 mt-4 rounded-lg transition-colors duration-200"
+        [class]="currentView() === 'newJig' ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'">
         <i class="fas fa-plus-circle w-6 text-center"></i>
         <span class="mx-4 font-medium">{{ 'sidebar.newJigRequest' | translate }}</span>
-      </a>
+      </button>
     </nav>
     <div class="p-4 border-t border-gray-700">
         <p class="text-xs text-gray-400">{{ 'footer.copyright' | translate }}</p>

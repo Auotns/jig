@@ -43,7 +43,7 @@ export class AppComponent {
   currentView = signal<View>('inventory');
   selectedJig = signal<Jig | undefined>(undefined);
   isLangDropdownOpen = signal(false);
-  isSidebarOpen = signal(true); // Default open for desktop
+  isSidebarOpen = signal(false); // Default closed for mobile
   jigStatuses: JigStatus[] = ['In Stock', 'In Use', 'Under Maintenance', 'Scrapped'];
   
   currentUser = this.authService.currentUser;
