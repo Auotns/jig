@@ -175,9 +175,11 @@ admin.auth().setCustomUserClaims(uid, { role: "Administrator" });
 **Possible causes and solutions:**
 
 1. **Firestore Security Rules not configured**
+
    - Go to Firebase Console → Firestore Database → Rules
    - Check if rules allow authenticated users to read/write
    - Required rules (copy to Firebase Console):
+
    ```javascript
    rules_version = '2';
    service cloud.firestore {
@@ -194,18 +196,22 @@ admin.auth().setCustomUserClaims(uid, { role: "Administrator" });
      }
    }
    ```
+
    - Click "Publish" to save rules
 
 2. **Not logged in on second device**
+
    - Ensure you are logged in with the same account on both devices
    - Check user icon in top-right corner
 
 3. **Browser console errors**
+
    - Open Developer Tools (F12)
    - Check Console tab for Firestore errors
    - Common error: "Missing or insufficient permissions" → Fix security rules (see above)
 
 4. **Network connectivity**
+
    - Ensure both devices have internet connection
    - Firestore requires active internet to sync
 
@@ -214,6 +220,7 @@ admin.auth().setCustomUserClaims(uid, { role: "Administrator" });
    - Clear browser cache and reload
 
 **Testing synchronization:**
+
 1. Device A: Add a new JIG record
 2. Device B (with same login): Should see new JIG within 1-2 seconds
 3. If not appearing: Check console errors on both devices

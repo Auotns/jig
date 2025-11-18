@@ -30,8 +30,11 @@ export class JigService {
   private loadJigsFromFirestore(): void {
     const jigsQuery = query(this.jigsCollection, orderBy('dateOfReceive', 'desc'));
     
+    console.log('Starting Firestore subscription for JIGs collection...');
+    
     collectionData(jigsQuery, { idField: 'firestoreId' }).subscribe({
       next: (data: any[]) => {
+        console.log('Firestore data received:', data.length, 'JIGs');
         const jigs: Jig[] = data.map(item => ({
           id: item.id || item.firestoreId,
           customer: item.customer,
@@ -50,6 +53,11 @@ export class JigService {
       },
       error: (error) => {
         console.error('Error loading JIGs from Firestore:', error);
+        console.error('Error code:', error?.code);
+        console.error('Error message:', error?.message);
+        if (error?.code === 'permission-denied') {
+          console.error('⚠️ FIRESTORE SECURITY RULES ERROR: Permission denied. Check Firebase Console → Firestore → Rules');
+        }
       }
     });
   }
@@ -90,10 +98,15 @@ export class JigService {
     try {
       const jigData = { ...jig };
       delete (jigData as any).firestoreId;
-      await addDoc(this.jigsCollection, jigData);
-      console.log('JIG added to Firestore:', jig.id);
-    } catch (error) {
+      console.log('Attempting to add JIG to Firestore:', jig.id, jigData);
+      const docRef = await addDoc(this.jigsCollection, jigData);
+      console.log('JIG added to Firestore successfully:', jig.id, 'Document ID:', docRef.id);
+    } catch (error: any) {
       console.error('Error adding JIG to Firestore:', error);
+      console.error('Error code:', error?.code);
+      console.error('Error message:', error?.message);
+      alert('Chyba pri ukladaní JIG do databázy: ' + (error?.message || 'Neznáma chyba. Skontrolujte či ste prihlásený a či máte internetové pripojenie.'));
+      throw error;
     }
   }
 
