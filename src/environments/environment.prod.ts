@@ -13,3 +13,7 @@ export const environment = {
     appId: '1:676640085832:web:1a303667b49ff7c808857d'
   }
 };
+
+// Note: Firebase API keys are safe to expose in client-side code.
+// Security is enforced through Firestore Security Rules and Authentication.
+// See: https://firebase.google.com/docs/projects/api-keys
