@@ -93,33 +93,48 @@ export class AppComponent {
     this.currentView.set('maintenance');
   }
 
-  handleSaveJig(jig: Jig) {
-    if (this.selectedJig()) {
-        // This would be an update, but for this app we only have creation
-        this.jigService.addJig(jig);
-    } else {
-        this.jigService.addJig(jig);
+  async handleSaveJig(jig: Jig) {
+    try {
+      await this.jigService.addJig(jig);
+      this.currentView.set('inventory');
+    } catch (error) {
+      console.error('Error saving JIG:', error);
+      alert('Error saving JIG. Please try again.');
     }
-    this.currentView.set('inventory');
   }
 
-  handleSaveMaintenance(record: {jigId: string, record: any}) {
-    this.jigService.addMaintenanceRecord(record.jigId, record.record);
-    const updatedJig = this.jigs().find(j => j.id === record.jigId);
-    this.selectedJig.set(updatedJig);
-    this.currentView.set('detail');
+  async handleSaveMaintenance(record: {jigId: string, record: any}) {
+    try {
+      await this.jigService.addMaintenanceRecord(record.jigId, record.record);
+      const updatedJig = this.jigs().find(j => j.id === record.jigId);
+      this.selectedJig.set(updatedJig);
+      this.currentView.set('detail');
+    } catch (error) {
+      console.error('Error saving maintenance record:', error);
+      alert('Error saving maintenance record. Please try again.');
+    }
   }
 
-  handleChangeStatus({ jigId, newStatus }: { jigId: string; newStatus: JigStatus }) {
-    this.jigService.updateJigStatus(jigId, newStatus);
-    const updatedJig = this.jigService.jigs().find(j => j.id === jigId);
-    this.selectedJig.set(updatedJig);
+  async handleChangeStatus({ jigId, newStatus }: { jigId: string; newStatus: JigStatus }) {
+    try {
+      await this.jigService.updateJigStatus(jigId, newStatus);
+      const updatedJig = this.jigService.jigs().find(j => j.id === jigId);
+      this.selectedJig.set(updatedJig);
+    } catch (error) {
+      console.error('Error updating status:', error);
+      alert('Error updating status. Please try again.');
+    }
   }
 
-  handleDeleteJig(jig: Jig) {
+  async handleDeleteJig(jig: Jig) {
     const confirmationMessage = this.translationService.translate('inventory.deleteConfirm.message');
     if (window.confirm(confirmationMessage)) {
-      this.jigService.deleteJig(jig.id);
+      try {
+        await this.jigService.deleteJig(jig.id);
+      } catch (error) {
+        console.error('Error deleting JIG:', error);
+        alert('Error deleting JIG. Please try again.');
+      }
     }
   }
 
@@ -298,13 +313,13 @@ export class AppComponent {
     }
 
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       try {
         const text = e.target?.result as string;
         const importedJigs: Jig[] = JSON.parse(text);
 
         if (Array.isArray(importedJigs) && (importedJigs.length === 0 || (importedJigs[0].id && importedJigs[0].customer))) {
-          this.jigService.importJigs(importedJigs);
+          await this.jigService.importJigs(importedJigs);
           alert(this.translationService.translate('import.success.message'));
         } else {
           throw new Error('Invalid data structure');

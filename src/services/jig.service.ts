@@ -1,101 +1,57 @@
 import { signal, computed, Injectable, Signal, inject, effect } from '@angular/core';
 import { Jig, MaintenanceRecord, JigStatus } from '../models/jig.model';
-import { StorageService } from './storage.service';
+import { 
+  Firestore, 
+  collection, 
+  collectionData, 
+  doc, 
+  addDoc, 
+  updateDoc, 
+  deleteDoc,
+  query,
+  orderBy
+} from '@angular/fire/firestore';
 
-const MOCK_JIGS: Jig[] = [
-  {
-    id: 'J_BMW_001',
-    customer: 'BMW',
-    dateOfReceive: '2023-10-15T00:00:00.000Z',
-    productModelType: 'F30 Headlight Test',
-    receivedFrom: 'EQ Department',
-    storageLocation: 'Shelf A-12',
-    responsiblePerson: 'John Doe',
-    status: 'In Stock',
-    maintenanceHistory: [
-      {
-        date: '2024-03-20T00:00:00.000Z',
-        checkResult: 'OK',
-        performedBy: 'Jane Smith',
-        notes: 'Routine monthly check.'
-      }
-    ],
-    transferHistory: []
-  },
-  {
-    id: 'J_STL_005',
-    customer: 'Stellantis',
-    dateOfReceive: '2023-11-01T00:00:00.000Z',
-    productModelType: 'Dashboard Connector',
-    receivedFrom: 'MPE Department',
-    storageLocation: 'Line 3',
-    responsiblePerson: 'Peter Jones',
-    status: 'In Use',
-    maintenanceHistory: [],
-    transferHistory: [
-        {
-            date: '2024-01-10T00:00:00.000Z',
-            type: 'Submission',
-            from: 'Warehouse',
-            to: 'Line 3',
-            recipient: 'Peter Jones'
-        }
-    ]
-  },
-  {
-    id: 'J_FRD_002',
-    customer: 'Ford',
-    dateOfReceive: '2024-01-20T00:00:00.000Z',
-    productModelType: 'Sync 4 Test Cable',
-    receivedFrom: 'External Supplier',
-    storageLocation: 'Maintenance Room',
-    responsiblePerson: 'Susan Bell',
-    status: 'Under Maintenance',
-    maintenanceHistory: [
-       {
-        date: '2024-05-10T00:00:00.000Z',
-        checkResult: 'NOK',
-        issue: 'Connector pin bent.',
-        correctiveAction: 'Replaced connector head.',
-        performedBy: 'Susan Bell',
-       }
-    ],
-    transferHistory: []
-  },
-   {
-    id: 'C_DMR_011',
-    customer: 'Daimler',
-    dateOfReceive: '2022-05-10T00:00:00.000Z',
-    productModelType: 'LVDS Cable',
-    receivedFrom: 'QC Department',
-    storageLocation: 'Scrap Bin',
-    responsiblePerson: 'Admin',
-    status: 'Scrapped',
-    notes: 'Damaged beyond repair.',
-    maintenanceHistory: [],
-    transferHistory: []
-  }
-];
 @Injectable({
   providedIn: 'root'
 })
 export class JigService {
-  private storageService = inject(StorageService);
+  private firestore = inject(Firestore);
+  private jigsCollection = collection(this.firestore, 'jigs');
   
-  private _jigs = signal<Jig[]>(this.loadInitialJigs());
+  private _jigs = signal<Jig[]>([]);
   public readonly jigs: Signal<Jig[]> = this._jigs.asReadonly();
 
   constructor() {
-    // Auto-save to localStorage whenever jigs change
-    effect(() => {
-      const currentJigs = this._jigs();
-      this.storageService.saveJigs(currentJigs);
-    });
+    // Subscribe to Firestore collection for real-time updates
+    this.loadJigsFromFirestore();
   }
 
-  private loadInitialJigs(): Jig[] {
-    const savedJigs = this.storageService.loadJigs();
-    return savedJigs && savedJigs.length > 0 ? savedJigs : MOCK_JIGS;
+  private loadJigsFromFirestore(): void {
+    const jigsQuery = query(this.jigsCollection, orderBy('dateOfReceive', 'desc'));
+    
+    collectionData(jigsQuery, { idField: 'firestoreId' }).subscribe({
+      next: (data: any[]) => {
+        const jigs: Jig[] = data.map(item => ({
+          id: item.id || item.firestoreId,
+          customer: item.customer,
+          dateOfReceive: item.dateOfReceive,
+          productModelType: item.productModelType,
+          receivedFrom: item.receivedFrom,
+          storageLocation: item.storageLocation,
+          responsiblePerson: item.responsiblePerson,
+          status: item.status,
+          notes: item.notes || '',
+          maintenanceHistory: item.maintenanceHistory || [],
+          transferHistory: item.transferHistory || [],
+          firestoreId: item.firestoreId
+        }));
+        this._jigs.set(jigs);
+      },
+      error: (error) => {
+        console.error('Error loading JIGs from Firestore:', error);
+      }
+    });
   }
   
   filter = signal<string>('');
@@ -130,49 +86,72 @@ export class JigService {
     return this._jigs().some(jig => jig.id.toLowerCase() === id.toLowerCase());
   }
   
-  addJig(jig: Jig) {
-    this._jigs.update(jigs => [jig, ...jigs]);
+  async addJig(jig: Jig): Promise<void> {
+    try {
+      const jigData = { ...jig };
+      delete (jigData as any).firestoreId;
+      await addDoc(this.jigsCollection, jigData);
+      console.log('JIG added to Firestore:', jig.id);
+    } catch (error) {
+      console.error('Error adding JIG to Firestore:', error);
+    }
   }
 
-  deleteJig(jigId: string) {
-    this._jigs.update(jigs => jigs.filter(j => j.id !== jigId));
+  async deleteJig(jigId: string): Promise<void> {
+    try {
+      const jig = this._jigs().find(j => j.id === jigId);
+      if (jig && (jig as any).firestoreId) {
+        const docRef = doc(this.firestore, 'jigs', (jig as any).firestoreId);
+        await deleteDoc(docRef);
+        console.log('JIG deleted from Firestore:', jigId);
+      }
+    } catch (error) {
+      console.error('Error deleting JIG from Firestore:', error);
+    }
   }
 
-  updateJigStatus(jigId: string, newStatus: JigStatus) {
-    this._jigs.update(jigs => {
-        const jigIndex = jigs.findIndex(j => j.id === jigId);
-        if (jigIndex > -1) {
-            const updatedJig = {...jigs[jigIndex], status: newStatus};
-            const newJigs = [...jigs];
-            newJigs[jigIndex] = updatedJig;
-            return newJigs;
-        }
-        return jigs;
-    });
+  async updateJigStatus(jigId: string, newStatus: JigStatus): Promise<void> {
+    try {
+      const jig = this._jigs().find(j => j.id === jigId);
+      if (jig && (jig as any).firestoreId) {
+        const docRef = doc(this.firestore, 'jigs', (jig as any).firestoreId);
+        await updateDoc(docRef, { status: newStatus });
+        console.log('JIG status updated in Firestore:', jigId, newStatus);
+      }
+    } catch (error) {
+      console.error('Error updating JIG status in Firestore:', error);
+    }
   }
 
-  addMaintenanceRecord(jigId: string, record: MaintenanceRecord) {
-    this._jigs.update(jigs => {
-        const jigIndex = jigs.findIndex(j => j.id === jigId);
-        if (jigIndex > -1) {
-            const updatedJig = {...jigs[jigIndex]};
-            updatedJig.maintenanceHistory = [record, ...updatedJig.maintenanceHistory];
-            
-            if (record.checkResult === 'OK') {
-              updatedJig.status = 'In Stock'; // Assuming it goes back to stock after OK maintenance
-            } else {
-              updatedJig.status = 'Under Maintenance';
-            }
-
-            const newJigs = [...jigs];
-            newJigs[jigIndex] = updatedJig;
-            return newJigs;
-        }
-        return jigs;
-    });
+  async addMaintenanceRecord(jigId: string, record: MaintenanceRecord): Promise<void> {
+    try {
+      const jig = this._jigs().find(j => j.id === jigId);
+      if (jig && (jig as any).firestoreId) {
+        const docRef = doc(this.firestore, 'jigs', (jig as any).firestoreId);
+        const updatedHistory = [record, ...jig.maintenanceHistory];
+        const newStatus = record.checkResult === 'OK' ? 'In Stock' : 'Under Maintenance';
+        
+        await updateDoc(docRef, {
+          maintenanceHistory: updatedHistory,
+          status: newStatus
+        });
+        console.log('Maintenance record added in Firestore:', jigId);
+      }
+    } catch (error) {
+      console.error('Error adding maintenance record in Firestore:', error);
+    }
   }
   
-  importJigs(newJigs: Jig[]): void {
-    this._jigs.set(newJigs);
+  async importJigs(newJigs: Jig[]): Promise<void> {
+    try {
+      for (const jig of newJigs) {
+        const jigData = { ...jig };
+        delete (jigData as any).firestoreId;
+        await addDoc(this.jigsCollection, jigData);
+      }
+      console.log('JIGs imported to Firestore');
+    } catch (error) {
+      console.error('Error importing JIGs to Firestore:', error);
+    }
   }
 }
