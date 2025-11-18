@@ -1,0 +1,77 @@
+<div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-md">
+  <form [formGroup]="jigForm" (ngSubmit)="onSubmit()" class="space-y-6">
+    <h3 class="text-2xl font-semibold text-gray-700 border-b pb-4 mb-6">{{ 'form.jig.title' | translate }}</h3>
+
+    <!-- JIG Number Section -->
+    <div>
+        <label class="block text-sm font-medium text-gray-700">{{ 'form.jig.numberLabel' | translate }}</label>
+        <p class="text-xs text-gray-500 mb-2">{{ 'form.jig.numberHint' | translate }}</p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+                 <label for="prefix" class="block text-xs font-medium text-gray-600">{{ 'form.jig.prefix' | translate }}</label>
+                 <select id="prefix" formControlName="prefix" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                    <option value="J">{{ 'form.jig.prefixOptionJig' | translate }}</option>
+                    <option value="C">{{ 'form.jig.prefixOptionCable' | translate }}</option>
+                 </select>
+            </div>
+             <div>
+                <label for="customer" class="block text-xs font-medium text-gray-600">{{ 'form.jig.customerCode' | translate }}</label>
+                <input type="text" id="customer" formControlName="customer" [placeholder]="'form.jig.customerPlaceholder' | translate"
+                    class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                @if (jigForm.get('customer')?.invalid && jigForm.get('customer')?.touched) {
+                    <p class="mt-1 text-xs text-red-600">{{ 'form.jig.customerError' | translate }}</p>
+                }
+            </div>
+             <div>
+                <label for="serial" class="block text-xs font-medium text-gray-600">{{ 'form.jig.serialNumber' | translate }}</label>
+                <input type="text" id="serial" formControlName="serial" [placeholder]="'form.jig.serialPlaceholder' | translate"
+                    class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                @if (jigForm.get('serial')?.invalid && jigForm.get('serial')?.touched) {
+                    <p class="mt-1 text-xs text-red-600">{{ 'form.jig.serialError' | translate }}</p>
+                }
+            </div>
+        </div>
+         @if (jigForm.hasError('duplicateId') && (jigForm.get('customer')?.valid && jigForm.get('serial')?.valid)) {
+            <p class="mt-2 text-sm text-red-600 font-semibold flex items-center">
+                <i class="fas fa-exclamation-triangle mr-2"></i>
+                {{ 'form.jig.duplicateIdError' | translate }}
+            </p>
+        }
+    </div>
+    
+    <!-- Other Fields -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+       <div>
+        <label for="productModelType" class="block text-sm font-medium text-gray-700">{{ 'form.jig.modelType' | translate }}</label>
+        <input type="text" id="productModelType" formControlName="productModelType" class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+      </div>
+      <div>
+        <label for="receivedFrom" class="block text-sm font-medium text-gray-700">{{ 'form.jig.receivedFrom' | translate }}</label>
+        <input type="text" id="receivedFrom" formControlName="receivedFrom" class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+      </div>
+      <div>
+        <label for="storageLocation" class="block text-sm font-medium text-gray-700">{{ 'form.jig.storageLocation' | translate }}</label>
+        <input type="text" id="storageLocation" formControlName="storageLocation" class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+      </div>
+       <div>
+        <label for="responsiblePerson" class="block text-sm font-medium text-gray-700">{{ 'form.jig.responsiblePerson' | translate }}</label>
+        <input type="text" id="responsiblePerson" formControlName="responsiblePerson" class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+      </div>
+    </div>
+
+    <div>
+      <label for="notes" class="block text-sm font-medium text-gray-700">{{ 'form.jig.notes' | translate }}</label>
+      <textarea id="notes" formControlName="notes" rows="3" class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"></textarea>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex justify-end space-x-4 pt-4 border-t mt-6">
+      <button type="button" (click)="cancel.emit()" class="bg-gray-200 text-gray-700 px-6 py-2 rounded-md hover:bg-gray-300 transition-colors duration-200">
+        {{ 'form.jig.cancel' | translate }}
+      </button>
+      <button type="submit" [disabled]="jigForm.invalid" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors duration-200 disabled:bg-blue-300 disabled:cursor-not-allowed">
+        {{ 'form.jig.save' | translate }}
+      </button>
+    </div>
+  </form>
+</div>

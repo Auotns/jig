@@ -1,0 +1,5 @@
+{
+  "name": "JIG Management System",
+  "description": "A web application for tracking, managing, and maintaining JIGs on the shop floor, based on company documentation. It allows for new JIG registration, inventory management, and logging maintenance records.",
+  "requestFramePermissions": []
+}

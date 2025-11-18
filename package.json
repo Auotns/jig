@@ -1,0 +1,40 @@
+{
+  "name": "jig-management-system",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "ng serve",
+    "build": "ng build --configuration production --base-href /JIG/",
+    "build:dev": "ng build --configuration development",
+    "preview": "ng serve --configuration=production",
+    "test": "echo \"No tests configured yet\"",
+    "lint": "echo \"No linting configured yet\""
+  },
+  "dependencies": {
+    "@angular/build": "^20.3.0",
+    "@angular/cli": "^20.3.0",
+    "@angular/common": "^20.3.0",
+    "@angular/compiler": "^20.3.0",
+    "@angular/compiler-cli": "^20.3.0",
+    "@angular/core": "^20.3.0",
+    "@angular/fire": "^20.0.1",
+    "@angular/forms": "^20.3.12",
+    "@angular/platform-browser": "^20.3.0",
+    "@angular/platform-browser-dynamic": "^20.3.0",
+    "@angular/router": "^20.3.0",
+    "firebase": "^11.10.0",
+    "jspdf": "^3.0.3",
+    "jspdf-autotable": "^5.0.2",
+    "rxjs": "^7.8.2",
+    "tailwindcss": "latest",
+    "xlsx": "^0.18.5",
+    "zone.js": "^0.15.0"
+  },
+  "devDependencies": {
+    "@types/jspdf": "^1.3.3",
+    "@types/node": "^22.14.0",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.0"
+  }
+}

@@ -1,0 +1,65 @@
+<div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-md">
+  <form [formGroup]="maintenanceForm" (ngSubmit)="onSubmit()" class="space-y-6">
+    <div class="border-b pb-4 mb-6">
+        <h3 class="text-2xl font-semibold text-gray-700">{{ 'form.maint.title' | translate }}</h3>
+        <p class="text-gray-500">{{ 'form.maint.forJig' | translate }}: <span class="font-bold text-gray-800">{{ jig().id }}</span></p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+            <label class="block text-sm font-medium text-gray-700">{{ 'form.maint.checkResult' | translate }}</label>
+            <div class="mt-2 flex space-x-4">
+                <label class="inline-flex items-center">
+                    <input type="radio" formControlName="checkResult" value="OK" class="form-radio text-green-600">
+                    <span class="ml-2 text-green-700">{{ 'form.maint.ok' | translate }}</span>
+                </label>
+                <label class="inline-flex items-center">
+                    <input type="radio" formControlName="checkResult" value="NOK" class="form-radio text-red-600">
+                    <span class="ml-2 text-red-700">{{ 'form.maint.nok' | translate }}</span>
+                </label>
+            </div>
+        </div>
+        <div>
+            <label for="performedBy" class="block text-sm font-medium text-gray-700">{{ 'form.maint.performedBy' | translate }}</label>
+            <input type="text" id="performedBy" formControlName="performedBy" class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+             @if (maintenanceForm.get('performedBy')?.invalid && maintenanceForm.get('performedBy')?.touched) {
+                <p class="mt-1 text-xs text-red-600">{{ 'form.maint.requiredField' | translate }}</p>
+            }
+        </div>
+    </div>
+    
+    @if (isNok) {
+       <div class="space-y-6 border-t pt-6 border-red-200">
+            <div>
+                <label for="issue" class="block text-sm font-medium text-gray-700">{{ 'form.maint.issue' | translate }}</label>
+                <textarea id="issue" formControlName="issue" rows="3" class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"></textarea>
+                 @if (maintenanceForm.get('issue')?.invalid && maintenanceForm.get('issue')?.touched) {
+                    <p class="mt-1 text-xs text-red-600">{{ 'form.maint.issueError' | translate }}</p>
+                }
+            </div>
+            <div>
+                <label for="correctiveAction" class="block text-sm font-medium text-gray-700">{{ 'form.maint.correctiveAction' | translate }}</label>
+                <textarea id="correctiveAction" formControlName="correctiveAction" rows="3" class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"></textarea>
+                 @if (maintenanceForm.get('correctiveAction')?.invalid && maintenanceForm.get('correctiveAction')?.touched) {
+                    <p class="mt-1 text-xs text-red-600">{{ 'form.maint.correctiveActionError' | translate }}</p>
+                }
+            </div>
+       </div>
+    }
+
+    <div>
+      <label for="notes" class="block text-sm font-medium text-gray-700">{{ 'form.maint.notes' | translate }}</label>
+      <textarea id="notes" formControlName="notes" rows="3" class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"></textarea>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex justify-end space-x-4 pt-4 border-t mt-6">
+      <button type="button" (click)="cancel.emit()" class="bg-gray-200 text-gray-700 px-6 py-2 rounded-md hover:bg-gray-300 transition-colors duration-200">
+        {{ 'form.maint.cancel' | translate }}
+      </button>
+      <button type="submit" [disabled]="maintenanceForm.invalid" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors duration-200 disabled:bg-blue-300 disabled:cursor-not-allowed">
+        {{ 'form.maint.save' | translate }}
+      </button>
+    </div>
+  </form>
+</div>
