@@ -76,10 +76,10 @@ const translations: Record<string, Record<Language, string>> = {
   'detail.transfer.recipient': { en: 'Recipient', sk: 'Preberajúci', de: 'Empfänger' },
   'detail.transfer.empty': { en: 'No transfer history available.', sk: 'Nie je dostupná žiadna história presunov.', de: 'Keine Transferhistorie verfügbar.' },
   'detail.action.title': { en: 'Change Status', sk: 'Zmeniť stav', de: 'Status ändern' },
-  'detail.action.setInStock': { en: 'Set to In Stock', sk: 'Nastaviť na Sklade', de: 'Auf Lager setzen' },
-  'detail.action.setInUse': { en: 'Set to In Use', sk: 'Nastaviť na V používaní', de: 'In Benutzung setzen' },
-  'detail.action.setUnderMaintenance': { en: 'Set to Under Maintenance', sk: 'Nastaviť na V údržbe', de: 'In Wartung setzen' },
-  'detail.action.setScrapped': { en: 'Set to Scrapped', sk: 'Nastaviť na Vyradený', de: 'Verschrotten' },
+  'detail.action.setInStock': { en: 'Set to In Stock', sk: 'Na sklade', de: 'Auf Lager setzen' },
+  'detail.action.setInUse': { en: 'Set to In Use', sk: 'V používaní', de: 'In Benutzung setzen' },
+  'detail.action.setUnderMaintenance': { en: 'Set to Under Maintenance', sk: 'V údržbe', de: 'In Wartung setzen' },
+  'detail.action.setScrapped': { en: 'Set to Scrapped', sk: 'Vyradený', de: 'Verschrotten' },
   
 
   // JIG Form
