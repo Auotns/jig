@@ -7,10 +7,37 @@
   <base href="/" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA" />
+  
+  <!-- Tailwind CSS with fallback -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Fallback styles if CDN fails */
+    body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.5; }
+    .bg-gray-50 { background-color: #f9fafb; }
+    .bg-gray-100 { background-color: #f3f4f6; }
+    .bg-gray-800 { background-color: #1f2937; }
+    .text-white { color: white; }
+    .text-gray-800 { color: #1f2937; }
+    .flex { display: flex; }
+    .flex-col { flex-direction: column; }
+    .rounded-md { border-radius: 0.375rem; }
+    .px-4, .px-3, .px-2 { padding-left: var(--px); padding-right: var(--px); }
+    .py-2, .py-3 { padding-top: var(--py); padding-bottom: var(--py); }
+  </style>
+  
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
 </head>
 <body class="bg-gray-100">
   <app-root></app-root>
+  
+  <script>
+    // Check if Tailwind loaded, if not apply basic fallback
+    window.addEventListener('load', function() {
+      if (!window.tailwind) {
+        console.warn('Tailwind CSS CDN failed to load, using fallback styles');
+        document.body.classList.add('fallback-styles');
+      }
+    });
+  </script>
 </body>
 </html>
