@@ -9,7 +9,6 @@ import { UserRole } from '../../models/user.model';
   standalone: true,
   imports: [CommonModule, TranslatePipe],
   templateUrl: './jig-inventory.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class JigInventoryComponent {
   jigs = input.required<Jig[]>();

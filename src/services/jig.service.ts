@@ -33,10 +33,12 @@ export class JigService {
     const jigsQuery = query(this.jigsCollection, orderBy('dateOfReceive', 'desc'));
     
     console.log('Starting Firestore subscription for JIGs collection...');
+    console.log('Current user:', this.authService.currentUser());
     
     collectionData(jigsQuery, { idField: 'firestoreId' }).subscribe({
       next: (data: any[]) => {
         console.log('Firestore data received:', data.length, 'JIGs');
+        console.log('First item:', data[0]);
         const jigs: Jig[] = data.map(item => ({
           id: item.id || item.firestoreId,
           customer: item.customer,
@@ -51,6 +53,7 @@ export class JigService {
           transferHistory: item.transferHistory || [],
           firestoreId: item.firestoreId
         }));
+        console.log('Setting jigs signal with', jigs.length, 'items');
         this._jigs.set(jigs);
       },
       error: (error) => {
@@ -59,6 +62,10 @@ export class JigService {
         console.error('Error message:', error?.message);
         if (error?.code === 'permission-denied') {
           console.error('⚠️ FIRESTORE SECURITY RULES ERROR: Permission denied. Check Firebase Console → Firestore → Rules');
+        }
+        if (error?.code === 'failed-precondition' || error?.message?.includes('index')) {
+          console.error('⚠️ FIRESTORE INDEX ERROR: Missing index. Check console for index creation link.');
+          console.error('Index link might be in the error:', error);
         }
       }
     });
@@ -108,9 +115,13 @@ export class JigService {
         }
       });
       
-      console.log('Attempting to add JIG to Firestore:', jig.id, jigData);
+      console.log('Attempting to add JIG to Firestore:', jig.id);
+      console.log('JIG data:', jigData);
+      console.log('Current user:', this.authService.currentUser());
+      
       const docRef = await addDoc(this.jigsCollection, jigData);
       console.log('JIG added to Firestore successfully:', jig.id, 'Document ID:', docRef.id);
+      console.log('Firestore should trigger subscription update automatically...');
     } catch (error: any) {
       console.error('Error adding JIG to Firestore:', error);
       console.error('Error code:', error?.code);

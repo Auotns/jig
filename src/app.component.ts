@@ -21,7 +21,6 @@ export type View = 'inventory' | 'detail' | 'newJig' | 'maintenance';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
     ReactiveFormsModule,
