@@ -4,7 +4,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
-import toast, { Toaster } from 'react-hot-toast';
+import { toast } from 'ngx-sonner';
 import { JigService } from './services/jig.service';
 import { Jig, JigStatus } from './models/jig.model';
 import { JigInventoryComponent } from './components/jig-inventory/jig-inventory.component';
@@ -16,7 +16,7 @@ import { TranslatePipe } from './pipes/translate.pipe';
 import { AuthService } from './services/auth.service';
 import { LoginComponent } from './components/login/login.component';
 import { User } from './models/user.model';
-import { ToastComponent } from './components/toast/toast.component';
+import { NgxSonnerToaster } from 'ngx-sonner';
 
 export type View = 'inventory' | 'detail' | 'newJig' | 'maintenance';
 
@@ -32,7 +32,7 @@ export type View = 'inventory' | 'detail' | 'newJig' | 'maintenance';
     MaintenanceFormComponent,
     TranslatePipe,
     LoginComponent,
-    ToastComponent,
+    NgxSonnerToaster,
   ],
 })
 export class AppComponent {
