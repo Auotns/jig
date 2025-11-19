@@ -33,15 +33,25 @@ export class JigService {
   private loadJigsFromFirestore(): void {
     const jigsQuery = query(this.jigsCollection, orderBy('dateOfReceive', 'desc'));
     
-    console.log('Starting Firestore subscription for JIGs collection...');
-    console.log('Current user:', this.authService.currentUser());
+    console.log('🔵 Starting Firestore subscription for JIGs collection...');
+    console.log('🔵 Current user:', this.authService.currentUser());
+    console.log('🔵 Query collection path:', 'jigs');
     
-    // Use onSnapshot for real-time updates instead of collectionData
-    onSnapshot(
+    // Use onSnapshot for real-time updates with metadata changes
+    const unsubscribe = onSnapshot(
       jigsQuery,
+      { includeMetadataChanges: true }, // Get updates even for local changes
       (snapshot) => {
-        console.log('Firestore snapshot received:', snapshot.docs.length, 'documents');
-        console.log('Snapshot metadata - fromCache:', snapshot.metadata.fromCache, 'hasPendingWrites:', snapshot.metadata.hasPendingWrites);
+        console.log('🟢 Firestore snapshot received at', new Date().toISOString());
+        console.log('🟢 Documents count:', snapshot.docs.length);
+        console.log('🟢 Snapshot metadata:');
+        console.log('   - fromCache:', snapshot.metadata.fromCache);
+        console.log('   - hasPendingWrites:', snapshot.metadata.hasPendingWrites);
+        
+        // Log document changes
+        snapshot.docChanges().forEach(change => {
+          console.log(`   - ${change.type}:`, change.doc.data()['id']);
+        });
         
         const jigs: Jig[] = snapshot.docs.map(doc => {
           const data = doc.data();
@@ -61,16 +71,19 @@ export class JigService {
           };
         });
         
-        console.log('Setting jigs signal with', jigs.length, 'items');
+        console.log('🟢 Setting jigs signal with', jigs.length, 'items');
         if (jigs.length > 0) {
-          console.log('First JIG:', jigs[0].id);
+          console.log('🟢 First JIG ID:', jigs[0].id);
+          console.log('🟢 Last JIG ID:', jigs[jigs.length - 1].id);
         }
         this._jigs.set(jigs);
+        console.log('🟢 Signal updated successfully');
       },
       (error) => {
-        console.error('Error loading JIGs from Firestore:', error);
-        console.error('Error code:', error?.code);
-        console.error('Error message:', error?.message);
+        console.error('🔴 Error in Firestore subscription:', error);
+        console.error('🔴 Error code:', error?.code);
+        console.error('🔴 Error message:', error?.message);
+        console.error('🔴 Full error:', error);
         if (error?.code === 'permission-denied') {
           console.error('⚠️ FIRESTORE SECURITY RULES ERROR: Permission denied. Check Firebase Console → Firestore → Rules');
         }
@@ -80,6 +93,8 @@ export class JigService {
         }
       }
     );
+    
+    console.log('🔵 Subscription created successfully');
   }
   
   filter = signal<string>('');
