@@ -33,8 +33,17 @@
         <span class="mx-4 font-medium">{{ 'sidebar.newJigRequest' | translate }}</span>
       </button>
     </nav>
-    <div class="p-4 border-t border-gray-700">
-        <p class="text-xs text-gray-400">{{ 'footer.copyright' | translate }}</p>
+    <div class="p-4 border-t border-gray-700 space-y-2">
+        <!-- Version Info -->
+        <div class="flex items-center justify-between text-xs text-gray-400">
+          <span class="flex items-center">
+            <i class="fas fa-code-branch mr-2"></i>
+            {{ 'sidebar.version' | translate }}
+          </span>
+          <span class="font-mono font-semibold">v{{ appVersion }}</span>
+        </div>
+        <!-- Copyright -->
+        <p class="text-xs text-gray-400 text-center">{{ 'footer.copyright' | translate }}</p>
     </div>
   </aside>
 

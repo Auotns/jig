@@ -40,6 +40,8 @@ export class AppComponent {
   translationService = inject(TranslationService);
   authService = inject(AuthService);
   
+  appVersion = '1.0.0'; // Application version
+  
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
   currentView = signal<View>('inventory');

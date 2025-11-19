@@ -8,6 +8,7 @@ const translations: Record<string, Record<Language, string>> = {
   'sidebar.title': { en: 'JIG Manager', sk: 'JIG Manažér', de: 'JIG Manager' },
   'sidebar.inventory': { en: 'Inventory', sk: 'Inventár', de: 'Inventar' },
   'sidebar.newJigRequest': { en: 'New JIG Request', sk: 'Nová požiadavka na JIG', de: 'Neue JIG-Anfrage' },
+  'sidebar.version': { en: 'Version', sk: 'Verzia', de: 'Version' },
   'footer.copyright': { en: '© 2025 created by PoRast', sk: '© 2025 vytvoril PoRast', de: '© 2025 erstellt von PoRast' },
 
   // Header
