@@ -103,23 +103,17 @@ export class JigService {
   }
   
   async addJig(jig: Jig): Promise<void> {
-    try {
-      const jigData = { ...jig };
-      delete (jigData as any).firestoreId;
-      
-      // Remove undefined values - Firestore doesn't support them
-      Object.keys(jigData).forEach(key => {
-        if ((jigData as any)[key] === undefined) {
-          delete (jigData as any)[key];
-        }
-      });
-      
-      await addDoc(this.jigsCollection, jigData);
-    } catch (error: any) {
-      console.error('Error adding JIG:', error?.message || error);
-      alert('Chyba pri ukladaní JIG do databázy: ' + (error?.message || 'Neznáma chyba. Skontrolujte či ste prihlásený a či máte internetové pripojenie.'));
-      throw error;
-    }
+    const jigData = { ...jig };
+    delete (jigData as any).firestoreId;
+    
+    // Remove undefined values - Firestore doesn't support them
+    Object.keys(jigData).forEach(key => {
+      if ((jigData as any)[key] === undefined) {
+        delete (jigData as any)[key];
+      }
+    });
+    
+    await addDoc(this.jigsCollection, jigData);
   }
 
   async deleteJig(jigId: string): Promise<void> {

@@ -1,4 +1,7 @@
 @if (isAuthenticated()) {
+<!-- Toast Notifications -->
+<app-toast></app-toast>
+
 <div class="flex h-screen bg-gray-50 text-gray-800 overflow-hidden">
   <!-- Mobile Menu Button -->
   <button (click)="isSidebarOpen.set(!isSidebarOpen())" class="fixed top-4 left-4 z-50 md:hidden bg-gray-800 text-white p-2 rounded-md shadow-lg">

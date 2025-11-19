@@ -4,6 +4,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
+import toast, { Toaster } from 'react-hot-toast';
 import { JigService } from './services/jig.service';
 import { Jig, JigStatus } from './models/jig.model';
 import { JigInventoryComponent } from './components/jig-inventory/jig-inventory.component';
@@ -15,6 +16,7 @@ import { TranslatePipe } from './pipes/translate.pipe';
 import { AuthService } from './services/auth.service';
 import { LoginComponent } from './components/login/login.component';
 import { User } from './models/user.model';
+import { ToastComponent } from './components/toast/toast.component';
 
 export type View = 'inventory' | 'detail' | 'newJig' | 'maintenance';
 
@@ -30,6 +32,7 @@ export type View = 'inventory' | 'detail' | 'newJig' | 'maintenance';
     MaintenanceFormComponent,
     TranslatePipe,
     LoginComponent,
+    ToastComponent,
   ],
 })
 export class AppComponent {
@@ -85,9 +88,10 @@ export class AppComponent {
     try {
       await this.jigService.addJig(jig);
       this.currentView.set('inventory');
+      toast.success(this.translationService.translate('toast.jigSaved'));
     } catch (error) {
       console.error('Error saving JIG:', error);
-      alert('Error saving JIG. Please try again.');
+      toast.error(this.translationService.translate('toast.errorSaving'));
     }
   }
 
@@ -97,9 +101,10 @@ export class AppComponent {
       const updatedJig = this.jigService.jigs().find(j => j.id === record.jigId);
       this.selectedJig.set(updatedJig);
       this.currentView.set('detail');
+      toast.success(this.translationService.translate('toast.maintenanceSaved'));
     } catch (error) {
       console.error('Error saving maintenance record:', error);
-      alert('Error saving maintenance record. Please try again.');
+      toast.error(this.translationService.translate('toast.errorSaving'));
     }
   }
 
@@ -108,20 +113,24 @@ export class AppComponent {
       await this.jigService.updateJigStatus(jigId, newStatus);
       const updatedJig = this.jigService.jigs().find(j => j.id === jigId);
       this.selectedJig.set(updatedJig);
+      toast.success(this.translationService.translate('toast.statusUpdated'));
     } catch (error) {
       console.error('Error updating status:', error);
-      alert('Error updating status. Please try again.');
+      toast.error(this.translationService.translate('toast.errorUpdating'));
     }
   }
 
   async handleDeleteJig(jig: Jig) {
     const confirmationMessage = this.translationService.translate('inventory.deleteConfirm.message');
+    
+    // Use browser confirm as fallback since custom toast confirm is complex
     if (window.confirm(confirmationMessage)) {
       try {
         await this.jigService.deleteJig(jig.id);
+        toast.success(this.translationService.translate('toast.jigDeleted'));
       } catch (error) {
         console.error('Error deleting JIG:', error);
-        alert('Error deleting JIG. Please try again.');
+        toast.error(this.translationService.translate('toast.errorDeleting'));
       }
     }
   }

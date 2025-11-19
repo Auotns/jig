@@ -130,6 +130,17 @@ const translations: Record<string, Record<Language, string>> = {
   'auth.logout': { en: 'Logout', sk: 'Odhlásiť sa', de: 'Abmelden' },
   'user.role.Administrator': { en: 'Administrator', sk: 'Administrátor', de: 'Administrator' },
   'user.role.User': { en: 'User', sk: 'Používateľ', de: 'Benutzer' },
+
+  // Toast Messages
+  'toast.jigSaved': { en: 'JIG saved successfully!', sk: 'JIG úspešne uložený!', de: 'JIG erfolgreich gespeichert!' },
+  'toast.maintenanceSaved': { en: 'Maintenance record saved!', sk: 'Záznam o údržbe uložený!', de: 'Wartungseintrag gespeichert!' },
+  'toast.statusUpdated': { en: 'Status updated successfully!', sk: 'Stav úspešne aktualizovaný!', de: 'Status erfolgreich aktualisiert!' },
+  'toast.jigDeleted': { en: 'JIG deleted successfully!', sk: 'JIG úspešne vymazaný!', de: 'JIG erfolgreich gelöscht!' },
+  'toast.errorSaving': { en: 'Error saving. Please try again.', sk: 'Chyba pri ukladaní. Skúste znova.', de: 'Fehler beim Speichern. Bitte versuchen Sie es erneut.' },
+  'toast.errorUpdating': { en: 'Error updating. Please try again.', sk: 'Chyba pri aktualizácii. Skúste znova.', de: 'Fehler beim Aktualisieren. Bitte versuchen Sie es erneut.' },
+  'toast.errorDeleting': { en: 'Error deleting. Please try again.', sk: 'Chyba pri mazaní. Skúste znova.', de: 'Fehler beim Löschen. Bitte versuchen Sie es erneut.' },
+  'toast.confirm': { en: 'Confirm', sk: 'Potvrdiť', de: 'Bestätigen' },
+  'toast.cancel': { en: 'Cancel', sk: 'Zrušiť', de: 'Abbrechen' },
 };
 
 @Injectable({
