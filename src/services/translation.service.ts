@@ -129,6 +129,7 @@ const translations: Record<string, Record<Language, string>> = {
   'auth.login.password': { en: 'Password', sk: 'Heslo', de: 'Passwort' },
   'auth.login.button': { en: 'Login', sk: 'Prihlásiť sa', de: 'Anmelden' },
   'auth.login.error': { en: 'Invalid email or password.', sk: 'Neplatný email alebo heslo.', de: 'Ungültige E-Mail oder Passwort.' },
+  'auth.login.testAccounts': { en: 'Available Test Accounts:', sk: 'Dostupné testovacie účty:', de: 'Verfügbare Testkonten:' },
   'auth.logout': { en: 'Logout', sk: 'Odhlásiť sa', de: 'Abmelden' },
   'user.role.Administrator': { en: 'Administrator', sk: 'Administrátor', de: 'Administrator' },
   'user.role.User': { en: 'User', sk: 'Používateľ', de: 'Benutzer' },
