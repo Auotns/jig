@@ -11,15 +11,17 @@ import {
   where,
   orderBy
 } from '@angular/fire/firestore';
-import { Jig, JigStatus, MaintenanceRecord } from '../models/jig.model';
+import { Jig, JigStatus, MaintenanceRecord, TransferRecord } from '../models/jig.model';
 import { Observable, map } from 'rxjs';
 import { computed } from '@angular/core';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FirestoreJigService {
   private firestore = inject(Firestore);
+  private authService = inject(AuthService);
   private jigsCollection = collection(this.firestore, 'jigs');
 
   // Signals for reactive state
@@ -121,11 +123,44 @@ export class FirestoreJigService {
         throw new Error('JIG not found or missing Firestore ID');
       }
       
+      const currentUser = this.authService.currentUser();
+      const username = currentUser?.username || 'System';
+      
+      // Create transfer record for status change
+      const transferRecord: TransferRecord = {
+        date: new Date().toISOString(),
+        type: newStatus === 'In Stock' ? 'Acceptance' : 'Submission',
+        from: this.getStatusLocationText(jig.status),
+        to: this.getStatusLocationText(newStatus),
+        recipient: username,
+        notes: `Status changed from ${jig.status} to ${newStatus}`
+      };
+      
+      const updatedHistory = [...jig.transferHistory, transferRecord];
+      
       const jigDoc = doc(this.firestore, 'jigs', (jig as any).firestoreId);
-      await updateDoc(jigDoc, { status: newStatus });
+      await updateDoc(jigDoc, { 
+        status: newStatus,
+        transferHistory: updatedHistory
+      });
     } catch (error) {
       console.error('Error updating JIG status:', error);
       throw error;
+    }
+  }
+
+  private getStatusLocationText(status: JigStatus): string {
+    switch (status) {
+      case 'In Stock':
+        return 'Storage';
+      case 'In Use':
+        return 'Production';
+      case 'Under Maintenance':
+        return 'Maintenance Department';
+      case 'Scrapped':
+        return 'Scrap';
+      default:
+        return 'Unknown';
     }
   }
 
