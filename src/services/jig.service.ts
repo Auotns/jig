@@ -24,10 +24,31 @@ export class JigService {
   
   private _jigs = signal<Jig[]>([]);
   public readonly jigs: Signal<Jig[]> = this._jigs.asReadonly();
+  
+  private listenerInitialized = false;
 
   constructor() {
-    // Subscribe to Firestore collection for real-time updates
-    this.loadJigsFromFirestore();
+    // Wait for auth to complete before loading JIGs
+    effect(() => {
+      const isAuthLoading = this.authService.isAuthLoading();
+      const isAuthenticated = this.authService.isAuthenticated();
+      
+      console.log('🔵 JigService: Auth state -', { isAuthLoading, isAuthenticated, listenerInitialized: this.listenerInitialized });
+      
+      // Only initialize listener once, after auth is complete and user is authenticated
+      if (!isAuthLoading && isAuthenticated && !this.listenerInitialized) {
+        console.log('🟢 JigService: Initializing Firestore listener');
+        this.loadJigsFromFirestore();
+        this.listenerInitialized = true;
+      }
+      
+      // Reset listener if user logs out
+      if (!isAuthenticated && this.listenerInitialized) {
+        console.log('🔴 JigService: User logged out, clearing data');
+        this._jigs.set([]);
+        this.listenerInitialized = false;
+      }
+    });
   }
 
   private loadJigsFromFirestore(): void {
