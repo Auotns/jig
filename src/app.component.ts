@@ -48,6 +48,13 @@ export class AppComponent {
   currentUser = this.authService.currentUser;
   isAuthenticated = this.authService.isAuthenticated;
 
+  // Direct references to service signals
+  jigs = this.jigService.filteredJigs;
+  filter = this.jigService.filter;
+  customerFilter = this.jigService.customerFilter;
+  statusFilter = this.jigService.statusFilter;
+  uniqueCustomers = this.jigService.uniqueCustomers;
+
   constructor() {
     // Effect to reset selected JIG when returning to inventory view
     effect(() => {
@@ -55,26 +62,13 @@ export class AppComponent {
         this.selectedJig.set(undefined);
       }
     });
-  }
 
-  get jigs() {
-    return this.jigService.filteredJigs;
-  }
-  
-  get filter() {
-      return this.jigService.filter;
-  }
-  
-  get customerFilter() {
-    return this.jigService.customerFilter;
-  }
-
-  get statusFilter() {
-    return this.jigService.statusFilter;
-  }
-
-  get uniqueCustomers() {
-    return this.jigService.uniqueCustomers;
+    // Effect to log JIGs changes for debugging
+    effect(() => {
+      const jigsCount = this.jigService.jigs().length;
+      const filteredCount = this.jigs().length;
+      console.log('AppComponent: Total JIGs:', jigsCount, 'Filtered:', filteredCount);
+    });
   }
 
   handleViewJig(jig: Jig) {
@@ -105,7 +99,7 @@ export class AppComponent {
   async handleSaveMaintenance(record: {jigId: string, record: any}) {
     try {
       await this.jigService.addMaintenanceRecord(record.jigId, record.record);
-      const updatedJig = this.jigs().find(j => j.id === record.jigId);
+      const updatedJig = this.jigService.jigs().find(j => j.id === record.jigId);
       this.selectedJig.set(updatedJig);
       this.currentView.set('detail');
     } catch (error) {
@@ -203,7 +197,7 @@ export class AppComponent {
   }
 
   handleExportPdf(): void {
-    const jigs = this.jigService.filteredJigs();
+    const jigs = this.jigs();
     const doc = new jsPDF({
       orientation: 'landscape',
       unit: 'mm',
@@ -256,7 +250,7 @@ export class AppComponent {
   }
 
   handleExportExcel(): void {
-    const jigs = this.jigService.filteredJigs();
+    const jigs = this.jigs();
     
     // Prepare data with translated headers
     const data = jigs.map(jig => ({
