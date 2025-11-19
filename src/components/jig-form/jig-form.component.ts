@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, output, inject } from '@angular/core';
+import { Component, output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Jig } from '../../models/jig.model';
@@ -10,7 +10,6 @@ import { JigService } from '../../services/jig.service';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
   templateUrl: './jig-form.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class JigFormComponent {
   save = output<Jig>();
