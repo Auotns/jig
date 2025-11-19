@@ -58,7 +58,7 @@ export class JigFormComponent {
         storageLocation: formValue.storageLocation!,
         responsiblePerson: formValue.responsiblePerson!,
         status: 'In Stock',
-        notes: formValue.notes || undefined,
+        notes: formValue.notes?.trim() || '',
         maintenanceHistory: [],
         transferHistory: [],
       };

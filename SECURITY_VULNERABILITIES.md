@@ -14,6 +14,7 @@ Last updated: November 18, 2025
 **Resolution:** Updated to glob v11.0.0+ via npm overrides
 
 ### Fix Applied:
+
 ```json
 "overrides": {
   "glob": "^11.0.0"
@@ -26,7 +27,8 @@ Last updated: November 18, 2025
 
 **Package:** xlsx v0.18.5  
 **Severity:** High  
-**CVE:** 
+**CVE:**
+
 - Prototype Pollution (GHSA-4r6h-8v6p-xvw6)
 - Regular Expression Denial of Service - ReDoS (GHSA-5pgg-2g8v-p4x9)
 
@@ -35,7 +37,7 @@ Last updated: November 18, 2025
 ### Why This Is Acceptable:
 
 1. **No Fix Available**: The xlsx maintainers have not released a patched version
-2. **Limited Impact**: 
+2. **Limited Impact**:
    - Prototype Pollution: Only affects user-uploaded Excel files
    - ReDoS: Only triggers on maliciously crafted Excel files with extremely long strings
 3. **Mitigation in Place**:
@@ -47,14 +49,16 @@ Last updated: November 18, 2025
 ### Attack Surface Analysis:
 
 **Exploit Requirements:**
+
 - User must be authenticated
 - User must explicitly choose to import a malicious Excel file
 - Attack only affects the attacker's own browser session
 - Cannot affect other users or the database
 
 **Risk Assessment:** **LOW**
+
 - ☑️ No remote code execution possible
-- ☑️ No data exfiltration possible  
+- ☑️ No data exfiltration possible
 - ☑️ No privilege escalation possible
 - ☑️ Self-inflicted DoS only (user crashes own browser)
 
@@ -62,6 +66,7 @@ Last updated: November 18, 2025
 
 **Option:** Switch to `exceljs` or `xlsx-populate`  
 **Decision:** Stay with `xlsx` because:
+
 - xlsx is the most widely used and tested
 - Alternative libraries have their own issues
 - Breaking change would affect existing exports

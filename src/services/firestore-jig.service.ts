@@ -99,6 +99,14 @@ export class FirestoreJigService {
     try {
       const jigData = { ...jig };
       delete (jigData as any).firestoreId; // Remove firestoreId if present
+      
+      // Remove undefined values - Firestore doesn't support them
+      Object.keys(jigData).forEach(key => {
+        if ((jigData as any)[key] === undefined) {
+          delete (jigData as any)[key];
+        }
+      });
+      
       await addDoc(this.jigsCollection, jigData);
     } catch (error) {
       console.error('Error adding JIG:', error);

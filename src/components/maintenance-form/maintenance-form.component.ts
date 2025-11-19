@@ -53,10 +53,10 @@ export class MaintenanceFormComponent {
       const newRecord: MaintenanceRecord = {
         date: new Date().toISOString(),
         checkResult: formValue.checkResult as 'OK' | 'NOK',
-        issue: formValue.issue || undefined,
-        correctiveAction: formValue.correctiveAction || undefined,
+        issue: formValue.issue || '',
+        correctiveAction: formValue.correctiveAction || '',
         performedBy: formValue.performedBy!,
-        notes: formValue.notes || undefined,
+        notes: formValue.notes || '',
       };
       this.save.emit({jigId: this.jig().id, record: newRecord});
     } else {
