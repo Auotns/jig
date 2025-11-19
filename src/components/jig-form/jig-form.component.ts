@@ -46,6 +46,13 @@ export class JigFormComponent {
     notes: [''],
   }, { validators: this.duplicateJigIdValidator });
 
+  constructor() {
+    // Re-run validation when any field changes
+    this.jigForm.valueChanges.subscribe(() => {
+      this.jigForm.updateValueAndValidity({ onlySelf: true, emitEvent: false });
+    });
+  }
+
   onSubmit() {
     if (this.jigForm.valid) {
       const formValue = this.jigForm.value;

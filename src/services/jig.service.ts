@@ -1,5 +1,6 @@
 import { signal, computed, Injectable, Signal, inject, effect } from '@angular/core';
-import { Jig, MaintenanceRecord, JigStatus } from '../models/jig.model';
+import { Jig, MaintenanceRecord, JigStatus, TransferRecord } from '../models/jig.model';
+import { AuthService } from './auth.service';
 import { 
   Firestore, 
   collection, 
@@ -17,6 +18,7 @@ import {
 })
 export class JigService {
   private firestore = inject(Firestore);
+  private authService = inject(AuthService);
   private jigsCollection = collection(this.firestore, 'jigs');
   
   private _jigs = signal<Jig[]>([]);
@@ -98,6 +100,14 @@ export class JigService {
     try {
       const jigData = { ...jig };
       delete (jigData as any).firestoreId;
+      
+      // Remove undefined values - Firestore doesn't support them
+      Object.keys(jigData).forEach(key => {
+        if ((jigData as any)[key] === undefined) {
+          delete (jigData as any)[key];
+        }
+      });
+      
       console.log('Attempting to add JIG to Firestore:', jig.id, jigData);
       const docRef = await addDoc(this.jigsCollection, jigData);
       console.log('JIG added to Firestore successfully:', jig.id, 'Document ID:', docRef.id);
@@ -127,12 +137,45 @@ export class JigService {
     try {
       const jig = this._jigs().find(j => j.id === jigId);
       if (jig && (jig as any).firestoreId) {
+        const currentUser = this.authService.currentUser();
+        const username = currentUser?.username || 'System';
+        
+        // Create transfer record for status change
+        const transferRecord: TransferRecord = {
+          date: new Date().toISOString(),
+          type: newStatus === 'In Stock' ? 'Acceptance' : 'Submission',
+          from: this.getStatusLocationText(jig.status),
+          to: this.getStatusLocationText(newStatus),
+          recipient: username,
+          notes: `Status changed from ${jig.status} to ${newStatus}`
+        };
+        
+        const updatedHistory = [...jig.transferHistory, transferRecord];
+        
         const docRef = doc(this.firestore, 'jigs', (jig as any).firestoreId);
-        await updateDoc(docRef, { status: newStatus });
+        await updateDoc(docRef, { 
+          status: newStatus,
+          transferHistory: updatedHistory
+        });
         console.log('JIG status updated in Firestore:', jigId, newStatus);
       }
     } catch (error) {
       console.error('Error updating JIG status in Firestore:', error);
+    }
+  }
+
+  private getStatusLocationText(status: JigStatus): string {
+    switch (status) {
+      case 'In Stock':
+        return 'Storage';
+      case 'In Use':
+        return 'Production';
+      case 'Under Maintenance':
+        return 'Maintenance Department';
+      case 'Scrapped':
+        return 'Scrap';
+      default:
+        return 'Unknown';
     }
   }
 
