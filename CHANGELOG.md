@@ -1,5 +1,63 @@
 # 📝 CHANGELOG - JIG Management System
 
+## [1.0.1] - 2025-11-19
+
+### 🔒 Bezpečnostné vylepšenia (Security)
+
+#### Firestore Security Rules
+- **Role-based Delete Protection**
+  - Len Administrátori môžu mazať JIGy
+  - Users môžu čítať, vytvárať a aktualizovať
+  - Helper funkcie `isAdmin()` a `isAuthenticated()`
+  - Ochrana na Firestore úrovni (nie len UI)
+
+#### Frontend Security
+- **UI Delete Button**
+  - Zobrazený len pre Administrátorov
+  - Podmienka: `jig.status === 'Scrapped' && userRole() === 'Administrator'`
+  - Desktop aj Mobile verzia
+
+### 🐛 Opravy (Fixed)
+
+#### Real-time Updates
+- **Fix: Načítanie JIG dát pri prvom prihlásení**
+  - JigService teraz čaká na dokončenie autentifikácie
+  - Effect sleduje `isAuthLoading` a `isAuthenticated`
+  - Firestore listener sa inicializuje až po prihlásení
+  - Vyriešený problém s prázdnym inventárom v novom prehliadači
+
+- **Fix: Okamžité zobrazenie nových záznamov**
+  - Odstránený `ChangeDetectionStrategy.OnPush` z JigFormComponent
+  - Nové JIGy sa zobrazujú okamžite bez refresh
+  - Real-time synchronizácia funguje správne
+
+### ✨ Vylepšenia UX (Improved)
+
+#### Login Screen
+- **Informácie o testovacích účtoch**
+  - Modrý info panel s dostupnými emailami
+  - Zobrazuje `auotns@gmail.com` a `user@auo.com`
+  - Ikony pre rozlíšenie Admin/User
+  - Preklady do EN/SK/DE
+
+#### Sidebar
+- **Verzia aplikácie**
+  - Zobrazená v pätičke ľavého menu
+  - Formát: `v1.0.1`
+  - Ikona vetvičky (git branch)
+  - Preložené do všetkých jazykov
+
+### 📚 Dokumentácia (Documentation)
+
+- **Pridaný:** `SECURITY_RECOMMENDATIONS.md`
+  - Kompletný bezpečnostný audit
+  - Implementované opatrenia
+  - Známe riziká a ich mitigácia
+  - Incident response plan
+  - Voliteľné vylepšenia
+
+---
+
 ## [1.0.0] - 2025-11-18
 
 ### ✨ Nové Funkcie (Added)

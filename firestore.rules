@@ -3,17 +3,37 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Users collection - authenticated users can read/write their own data
-    match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+    // Helper function to check if user is Administrator
+    function isAdmin() {
+      return request.auth != null && 
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'Administrator';
     }
     
-    // JIGs collection - all authenticated users can read and write
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Users collection - authenticated users can read/write their own data
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // JIGs collection - role-based access control
     match /jigs/{jigId} {
-      allow read: if request.auth != null;
-      allow create: if request.auth != null;
-      allow update: if request.auth != null;
-      allow delete: if request.auth != null;
+      // Anyone authenticated can read
+      allow read: if isAuthenticated();
+      
+      // Anyone authenticated can create new JIGs
+      allow create: if isAuthenticated();
+      
+      // Anyone authenticated can update JIGs (for status changes, maintenance)
+      allow update: if isAuthenticated();
+      
+      // Only Administrators can delete JIGs
+      allow delete: if isAdmin();
     }
   }
 }
