@@ -33,26 +33,11 @@ export class JigService {
   private loadJigsFromFirestore(): void {
     const jigsQuery = query(this.jigsCollection, orderBy('dateOfReceive', 'desc'));
     
-    console.log('🔵 Starting Firestore subscription for JIGs collection...');
-    console.log('🔵 Current user:', this.authService.currentUser());
-    console.log('🔵 Query collection path:', 'jigs');
-    
     // Use onSnapshot for real-time updates with metadata changes
-    const unsubscribe = onSnapshot(
+    onSnapshot(
       jigsQuery,
       { includeMetadataChanges: true }, // Get updates even for local changes
       (snapshot) => {
-        console.log('🟢 Firestore snapshot received at', new Date().toISOString());
-        console.log('🟢 Documents count:', snapshot.docs.length);
-        console.log('🟢 Snapshot metadata:');
-        console.log('   - fromCache:', snapshot.metadata.fromCache);
-        console.log('   - hasPendingWrites:', snapshot.metadata.hasPendingWrites);
-        
-        // Log document changes
-        snapshot.docChanges().forEach(change => {
-          console.log(`   - ${change.type}:`, change.doc.data()['id']);
-        });
-        
         const jigs: Jig[] = snapshot.docs.map(doc => {
           const data = doc.data();
           return {
@@ -71,30 +56,18 @@ export class JigService {
           };
         });
         
-        console.log('🟢 Setting jigs signal with', jigs.length, 'items');
-        if (jigs.length > 0) {
-          console.log('🟢 First JIG ID:', jigs[0].id);
-          console.log('🟢 Last JIG ID:', jigs[jigs.length - 1].id);
-        }
         this._jigs.set(jigs);
-        console.log('🟢 Signal updated successfully');
       },
       (error) => {
-        console.error('🔴 Error in Firestore subscription:', error);
-        console.error('🔴 Error code:', error?.code);
-        console.error('🔴 Error message:', error?.message);
-        console.error('🔴 Full error:', error);
+        console.error('Firestore subscription error:', error);
         if (error?.code === 'permission-denied') {
-          console.error('⚠️ FIRESTORE SECURITY RULES ERROR: Permission denied. Check Firebase Console → Firestore → Rules');
+          console.error('Permission denied. Please check Firestore security rules.');
         }
         if (error?.code === 'failed-precondition' || error?.message?.includes('index')) {
-          console.error('⚠️ FIRESTORE INDEX ERROR: Missing index. Check console for index creation link.');
-          console.error('Index link might be in the error:', error);
+          console.error('Missing Firestore index. Check Firebase console for index creation link.');
         }
       }
     );
-    
-    console.log('🔵 Subscription created successfully');
   }
   
   filter = signal<string>('');
@@ -141,17 +114,9 @@ export class JigService {
         }
       });
       
-      console.log('Attempting to add JIG to Firestore:', jig.id);
-      console.log('JIG data:', jigData);
-      console.log('Current user:', this.authService.currentUser());
-      
-      const docRef = await addDoc(this.jigsCollection, jigData);
-      console.log('JIG added to Firestore successfully:', jig.id, 'Document ID:', docRef.id);
-      console.log('Firestore should trigger subscription update automatically...');
+      await addDoc(this.jigsCollection, jigData);
     } catch (error: any) {
-      console.error('Error adding JIG to Firestore:', error);
-      console.error('Error code:', error?.code);
-      console.error('Error message:', error?.message);
+      console.error('Error adding JIG:', error?.message || error);
       alert('Chyba pri ukladaní JIG do databázy: ' + (error?.message || 'Neznáma chyba. Skontrolujte či ste prihlásený a či máte internetové pripojenie.'));
       throw error;
     }
@@ -163,10 +128,10 @@ export class JigService {
       if (jig && (jig as any).firestoreId) {
         const docRef = doc(this.firestore, 'jigs', (jig as any).firestoreId);
         await deleteDoc(docRef);
-        console.log('JIG deleted from Firestore:', jigId);
       }
     } catch (error) {
-      console.error('Error deleting JIG from Firestore:', error);
+      console.error('Error deleting JIG:', error);
+      throw error;
     }
   }
 
@@ -194,10 +159,10 @@ export class JigService {
           status: newStatus,
           transferHistory: updatedHistory
         });
-        console.log('JIG status updated in Firestore:', jigId, newStatus);
       }
     } catch (error) {
-      console.error('Error updating JIG status in Firestore:', error);
+      console.error('Error updating JIG status:', error);
+      throw error;
     }
   }
 
@@ -228,10 +193,10 @@ export class JigService {
           maintenanceHistory: updatedHistory,
           status: newStatus
         });
-        console.log('Maintenance record added in Firestore:', jigId);
       }
     } catch (error) {
-      console.error('Error adding maintenance record in Firestore:', error);
+      console.error('Error adding maintenance record:', error);
+      throw error;
     }
   }
   
@@ -242,9 +207,9 @@ export class JigService {
         delete (jigData as any).firestoreId;
         await addDoc(this.jigsCollection, jigData);
       }
-      console.log('JIGs imported to Firestore');
     } catch (error) {
-      console.error('Error importing JIGs to Firestore:', error);
+      console.error('Error importing JIGs:', error);
+      throw error;
     }
   }
 }

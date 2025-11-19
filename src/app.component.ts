@@ -63,12 +63,7 @@ export class AppComponent {
       }
     });
 
-    // Effect to log JIGs changes for debugging
-    effect(() => {
-      const jigsCount = this.jigService.jigs().length;
-      const filteredCount = this.jigs().length;
-      console.log('AppComponent: Total JIGs:', jigsCount, 'Filtered:', filteredCount);
-    });
+
   }
 
   handleViewJig(jig: Jig) {
