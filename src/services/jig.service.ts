@@ -33,11 +33,15 @@ export class JigService {
   private loadJigsFromFirestore(): void {
     const jigsQuery = query(this.jigsCollection, orderBy('dateOfReceive', 'desc'));
     
+    console.log('🔵 JigService: Starting Firestore subscription');
+    
     // Use onSnapshot for real-time updates with metadata changes
     onSnapshot(
       jigsQuery,
       { includeMetadataChanges: true }, // Get updates even for local changes
       (snapshot) => {
+        console.log('🟢 JigService: Snapshot received -', snapshot.docs.length, 'docs, fromCache:', snapshot.metadata.fromCache);
+        
         const jigs: Jig[] = snapshot.docs.map(doc => {
           const data = doc.data();
           return {
@@ -56,10 +60,11 @@ export class JigService {
           };
         });
         
+        console.log('🟢 JigService: Setting signal with', jigs.length, 'items');
         this._jigs.set(jigs);
       },
       (error) => {
-        console.error('Firestore subscription error:', error);
+        console.error('🔴 JigService: Firestore subscription error:', error);
         if (error?.code === 'permission-denied') {
           console.error('Permission denied. Please check Firestore security rules.');
         }
@@ -113,7 +118,9 @@ export class JigService {
       }
     });
     
+    console.log('📝 JigService: Adding JIG to Firestore:', jig.id);
     await addDoc(this.jigsCollection, jigData);
+    console.log('✅ JigService: JIG added successfully:', jig.id);
   }
 
   async deleteJig(jigId: string): Promise<void> {
