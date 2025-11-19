@@ -10,7 +10,8 @@ import {
   updateDoc, 
   deleteDoc,
   query,
-  orderBy
+  orderBy,
+  onSnapshot
 } from '@angular/fire/firestore';
 
 @Injectable({
@@ -35,28 +36,38 @@ export class JigService {
     console.log('Starting Firestore subscription for JIGs collection...');
     console.log('Current user:', this.authService.currentUser());
     
-    collectionData(jigsQuery, { idField: 'firestoreId' }).subscribe({
-      next: (data: any[]) => {
-        console.log('Firestore data received:', data.length, 'JIGs');
-        console.log('First item:', data[0]);
-        const jigs: Jig[] = data.map(item => ({
-          id: item.id || item.firestoreId,
-          customer: item.customer,
-          dateOfReceive: item.dateOfReceive,
-          productModelType: item.productModelType,
-          receivedFrom: item.receivedFrom,
-          storageLocation: item.storageLocation,
-          responsiblePerson: item.responsiblePerson,
-          status: item.status,
-          notes: item.notes || '',
-          maintenanceHistory: item.maintenanceHistory || [],
-          transferHistory: item.transferHistory || [],
-          firestoreId: item.firestoreId
-        }));
+    // Use onSnapshot for real-time updates instead of collectionData
+    onSnapshot(
+      jigsQuery,
+      (snapshot) => {
+        console.log('Firestore snapshot received:', snapshot.docs.length, 'documents');
+        console.log('Snapshot metadata - fromCache:', snapshot.metadata.fromCache, 'hasPendingWrites:', snapshot.metadata.hasPendingWrites);
+        
+        const jigs: Jig[] = snapshot.docs.map(doc => {
+          const data = doc.data();
+          return {
+            id: data['id'] || doc.id,
+            customer: data['customer'],
+            dateOfReceive: data['dateOfReceive'],
+            productModelType: data['productModelType'],
+            receivedFrom: data['receivedFrom'],
+            storageLocation: data['storageLocation'],
+            responsiblePerson: data['responsiblePerson'],
+            status: data['status'],
+            notes: data['notes'] || '',
+            maintenanceHistory: data['maintenanceHistory'] || [],
+            transferHistory: data['transferHistory'] || [],
+            firestoreId: doc.id
+          };
+        });
+        
         console.log('Setting jigs signal with', jigs.length, 'items');
+        if (jigs.length > 0) {
+          console.log('First JIG:', jigs[0].id);
+        }
         this._jigs.set(jigs);
       },
-      error: (error) => {
+      (error) => {
         console.error('Error loading JIGs from Firestore:', error);
         console.error('Error code:', error?.code);
         console.error('Error message:', error?.message);
@@ -68,7 +79,7 @@ export class JigService {
           console.error('Index link might be in the error:', error);
         }
       }
-    });
+    );
   }
   
   filter = signal<string>('');
