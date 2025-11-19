@@ -16,6 +16,7 @@ export class AuthService {
   user$ = user(this.auth);
 
   currentUser = signal<User | null>(null);
+  isAuthLoading = signal<boolean>(true); // Loading state for auth check
   isAuthenticated = computed(() => !!this.currentUser());
   userRole = computed(() => this.currentUser()?.role);
 
@@ -42,6 +43,9 @@ export class AuthService {
       } else {
         this.currentUser.set(null);
       }
+      
+      // Auth check complete
+      this.isAuthLoading.set(false);
     });
   }
 

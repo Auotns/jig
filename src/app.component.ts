@@ -50,6 +50,7 @@ export class AppComponent {
   
   currentUser = this.authService.currentUser;
   isAuthenticated = this.authService.isAuthenticated;
+  isAuthLoading = this.authService.isAuthLoading;
 
   // Direct references to service signals
   jigs = this.jigService.filteredJigs;

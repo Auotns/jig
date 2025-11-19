@@ -190,6 +190,14 @@
     </div>
   </main>
 </div>
+} @else if (isAuthLoading()) {
+  <!-- Loading Screen -->
+  <div class="flex items-center justify-center h-screen bg-gray-50">
+    <div class="text-center">
+      <div class="inline-block animate-spin rounded-full h-16 w-16 border-b-4 border-gray-800 mb-4"></div>
+      <p class="text-gray-600 text-lg">{{ 'auth.loading' | translate }}</p>
+    </div>
+  </div>
 } @else {
   <app-login></app-login>
 }

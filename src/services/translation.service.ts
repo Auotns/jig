@@ -121,6 +121,7 @@ const translations: Record<string, Record<Language, string>> = {
   'form.maint.requiredField': { en: 'This field is required.', sk: 'Toto pole je povinné.', de: 'Dieses Feld ist erforderlich.' },
 
   // Auth & Login
+  'auth.loading': { en: 'Loading...', sk: 'Načítavam...', de: 'Laden...' },
   'auth.login.title': { en: 'JIG Management System Login', sk: 'Prihlásenie do JIG Management Systému', de: 'JIG Management System Login' },
   'auth.login.email': { en: 'Email', sk: 'Email', de: 'E-Mail' },
   'auth.login.username': { en: 'Username', sk: 'Používateľské meno', de: 'Benutzername' },
